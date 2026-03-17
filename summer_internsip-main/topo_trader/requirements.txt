@@ -1,0 +1,15 @@
+yfinance
+numpy
+pandas
+scipy
+ripser
+persim
+torch
+scikit-learn
+joblib
+pyarrow
+fastparquet
+tqdm
+matplotlib
+seaborn
+networkx
