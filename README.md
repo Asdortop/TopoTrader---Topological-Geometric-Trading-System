@@ -1,426 +1,357 @@
 # TopoTrader — Topological-Geometric Trading System
 
-> **A next-generation algorithmic trading framework that treats the stock market as a vibrating geometric manifold — not a collection of random walks.**
+**A multi-component AI trading system that models the stock market as a dynamic graph, extracts topological stress signals using Persistent Homology and Graph Attention Networks, and predicts next-day equity direction using a Causal Temporal Convolutional Network — validated on the Indian Nifty-50 universe under realistic walk-forward conditions.**
 
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-TCN-ee4c2c?style=flat-square&logo=pytorch)](https://pytorch.org/)
-[![TDA](https://img.shields.io/badge/TDA-Ripser-purple?style=flat-square)](https://ripser.scikit-tda.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Research Paper](https://img.shields.io/badge/Research-Paper%20Included-orange?style=flat-square)](research_paper.pdf)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=flat&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![CUDA](https://img.shields.io/badge/CUDA-Accelerated-76B900?style=flat&logo=nvidia&logoColor=white)](https://developer.nvidia.com/cuda-toolkit)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## 📌 Overview
+## What is TopoTrader?
 
-**TopoTrader** is the production implementation of the research paper:
+TopoTrader treats the stock market as a **dynamic graph** — not a collection of independent price charts. At each point in time, the system builds a correlation network across all Nifty-50 stocks, extracts topological and geometric signals from its structure, and feeds a 16-channel feature tensor into a causal deep learning model to predict next-day directional movement.
 
-> *"A Survey on Geometric and Temporal Deep Learning Architectures for Financial Time Series Forecasting"*  
-> — Vaibhavi A, Tejas G, Harinath K, Vamshi S, Pranav T  
-> Department of CSE (AIML), VNR VJIET, Hyderabad
+Unlike standard quantitative models that rely on price/volume indicators alone, TopoTrader:
 
-Traditional algorithmic trading treats stocks as isolated time series. TopoTrader rejects this assumption. It models the entire market as a **graph signal defined on a non-Euclidean manifold**, and applies three mathematically rigorous lenses to extract genuine alpha:
+- **Geometric** — builds an attention-weighted graph of stock correlations at every time step
+- **Topological** — extracts H0/H1 Persistent Homology features describing market fragmentation and cycle structure
+- **Spectral** — computes Walsh-Hadamard synchronisation scores across the stock universe
+- **Regime-aware** — explicitly labels market regimes (Crash / High-Volatility / Bull / Sideways) as model inputs
+- **Walk-forward validated** — strictly no look-ahead bias; trains on past, tests on future
+- **Statistically verified** — significance-tested (p=0.033) and transaction-cost-adjusted (NSE break-even 50.10%)
 
-| Pillar | What it does | Why it matters |
+---
+
+## Results at a Glance
+
+Validated on Indian Nifty-50 universe (49 stocks, 2016-2020), 5 distinct economic regimes:
+
+| Metric | Result |
+|---|---|
+| Pooled hit rate (confident predictions) | **50.67%** |
+| Statistical significance (vs 50% random) | **p = 0.033, Z = 2.14** |
+| NSE break-even hit rate | 50.10% |
+| Edge above break-even | **+0.57 pp** |
+| Significantly beats | Momentum-5 (p=0.002), MACD (p=0.012), Momentum-1 (p=0.021) |
+| Statistically at parity with | Well-trained 7-channel TCN (p=0.73) |
+| Walk-forward windows validated | 5 (Demonetization, GST, IL&FS, Elections, COVID) |
+| Baselines compared | 10 (Naive, Technical, Classical ML, DL Ablation) |
+
+---
+
+## Architecture
+
+```mermaid
+flowchart TD
+    RAW[NSE Nifty-50 Raw Data\n49 tickers, 2010 to 2021] --> TECH
+    RAW --> GAT
+    RAW --> WALSH
+    RAW --> TDA
+    RAW --> REGIME
+
+    TECH[Standard Technical Indicators\nC1-C7: LogRet, Vol, RSI, MACD, ATR, BB, ZScore] --> MERGE
+    GAT[Graph Attention Engine\nC8: Adaptive correlation graph\nLearned attention-weighted aggregation] --> MERGE
+    WALSH[Walsh Spectral Scorer\nC9: Binary return synchronisation\nacross full stock universe] --> MERGE
+    TDA[Persistent Homology via Ripser\nC10: H0 - market fragmentation\nC11: H1 - topological loops\nC12: Beta Stability] --> MERGE
+    REGIME[Regime Classifier\nC13-C16: One-hot labels\nCrash, High-Vol, Bull, Sideways] --> MERGE
+
+    MERGE[Merged Feature Tensor\n16 channels x 64 time steps\nper stock per day] --> WFV
+
+    WFV[Walk-Forward Validation\nTrain on all prior years\nTest strictly on next unseen year] --> TCN
+
+    TCN[MarketTCN\n4x Dilated Causal Temporal Blocks\nDilation 1-2-4-8, Kernel 3, 32 filters\nSELU + WeightNorm + Residual Skip] --> OUT
+
+    OUT[Output: Probability next-day return is positive\none value per stock per day] --> FILTER
+
+    FILTER{Confidence\nDeadband Filter} -->|prob above 0.55| LONG[Long Signal]
+    FILTER -->|prob below 0.45| SHORT[Short Signal]
+    FILTER -->|0.45 to 0.55| SKIP[No Trade]
+
+    LONG --> EVAL
+    SHORT --> EVAL
+
+    EVAL[Evaluation Suite\nHit Rate on confident trades\nBinomial test p=0.033, Wilson 95% CI\nNSE break-even analysis\nPaired t-test vs 10 baselines]
+
+    style TECH fill:#3b82f6,color:#fff
+    style GAT fill:#ef4444,color:#fff
+    style WALSH fill:#8b5cf6,color:#fff
+    style TDA fill:#10b981,color:#fff
+    style REGIME fill:#f97316,color:#fff
+    style MERGE fill:#64748b,color:#fff
+    style TCN fill:#a855f7,color:#fff
+    style EVAL fill:#0ea5e9,color:#fff
+    style LONG fill:#22c55e,color:#fff
+    style SHORT fill:#ef4444,color:#fff
+```
+
+---
+
+## Feature Engineering Pipeline
+
+| Channel | Name | Type | What It Encodes |
+|---|---|---|---|
+| C1 | Log Return | Technical | Daily log return of the stock |
+| C2 | Volatility | Technical | Rolling standard deviation of returns |
+| C3 | RSI | Technical | Relative Strength Index (momentum oscillator) |
+| C4 | MACD | Technical | Trend/momentum divergence signal |
+| C5 | ATR | Technical | Average True Range (volatility measure) |
+| C6 | Bollinger %B | Technical | Position within Bollinger Bands |
+| C7 | Z-Score | Technical | Price deviation from rolling mean |
+| **C8** | **GAT Signal** | **Geometric** | Attention-weighted aggregation from correlation graph neighbours |
+| **C9** | **Walsh Score** | **Spectral** | Binary return synchronisation across entire stock universe |
+| **C10** | **H0 Persistence** | **Topological** | Market fragmentation — number and lifetime of connected components |
+| **C11** | **H1 Persistence** | **Topological** | Topological loops — cyclical co-movement structure |
+| **C12** | **Beta Stability** | **Topological** | Rate of structural change in market topology |
+| **C13** | **Crash Regime** | **Regime** | One-hot: market in crash or sharp drawdown |
+| **C14** | **High-Vol Regime** | **Regime** | One-hot: elevated volatility environment |
+| **C15** | **Bull Regime** | **Regime** | One-hot: sustained uptrend |
+| **C16** | **Sideways Regime** | **Regime** | One-hot: range-bound or normal market |
+
+### Why Selective Normalisation?
+
+C1-C7 are Z-score normalised (fixes scale mismatch: RSI ranges 0-100 while LogRet ranges -0.05 to +0.05).
+
+C8-C16 are left in **natural units** — topological features encode market stress as absolute magnitude spikes (e.g. H0 jumps from 0.3 to 2.1 during IL&FS crisis). Z-scoring would destroy this signal.
+
+---
+
+## Graph Attention Engine (C8)
+
+The GAT signal replaces the static Laplacian residual. Instead of hard-thresholding correlations at a fixed threshold, GAT learns adaptive edge weights:
+
+```
+attention(i,j) = softmax( LeakyReLU( a^T [W*hi concat W*hj] ) )
+```
+
+- `W` — learned linear transform applied to each stock's return vector
+- `a` — learned attention weight vector
+
+The output for each stock: a weighted aggregation from its correlated neighbours — encoding how much the stock's behaviour is explained by the market graph at this moment.
+
+---
+
+## Persistent Homology (C10-C12)
+
+Uses **Ripser** (Vietoris-Rips filtration) on the distance matrix of stock returns:
+
+- **H0 Persistence** — tracks connected components: how many separate clusters of stocks exist, and how long they persist. A spike indicates market fragmentation — a structural crash signal.
+- **H1 Persistence** — tracks 1-cycles (loops): groups of stocks forming closed co-movement rings. Their disappearance signals structural breakdown.
+- **Beta Stability** — measures how rapidly the topological structure is changing. A sudden drop indicates a regime transition.
+
+> Verified: H0 persistence spikes during IL&FS crisis (September 2018) and COVID crash (March 2020).
+
+---
+
+## Model — MarketTCN
+
+```
+Input: (Batch, 16 channels, 64 time steps)
+  -> TemporalBlock 1: dilation=1, 32 filters, kernel=3, SELU, WeightNorm, Residual
+  -> TemporalBlock 2: dilation=2, 32 filters, kernel=3, SELU, WeightNorm, Residual
+  -> TemporalBlock 3: dilation=4, 32 filters, kernel=3, SELU, WeightNorm, Residual
+  -> TemporalBlock 4: dilation=8, 32 filters, kernel=3, SELU, WeightNorm, Residual
+  -> Linear(32 -> 1) -> Sigmoid
+Output: P(next-day return > 0) in [0, 1]
+```
+
+Causal convolutions via Chomp1d — future data is never visible. Total receptive field: 30 days.
+
+---
+
+## Training Pipeline
+
+| Setting | Value | Reason |
 |---|---|---|
-| 🔷 **Spectral Graph Theory** | Computes Laplacian Residuals ("Locomis") | Detects when a stock decouples from its peer manifold — a mispricing signal |
-| 🔶 **Topological Data Analysis (TDA)** | Tracks Persistence Entropy via Ripser | Predicts systemic crashes *before* volatility spikes |
-| 🔹 **Causal TCN** | Dilated 1D convolutions, no data leakage | Captures up to 2,000+ day memory — far beyond LSTM's ~200-step horizon |
-| 🔸 **Walsh-Hadamard Filter** | Sequency domain analysis | Distinguishes mean-reverting bounces from structural momentum breaks |
-
-These four signals fuse into a 12-channel tensor that feeds a **Market TCN** — a physics-informed deep learning model trained on 55+ S&P 100 / ETF assets from 2015–2023.
-
----
-
-## 🧠 The Core Idea — Why This Is Different
-
-Standard deep learning in finance is a **"black box"** that memorizes price patterns. When market regimes shift, it fails silently.
-
-TopoTrader uses the **"Grey Box"** paradigm:
-
-```
-Raw OHLCV  →  Geometric Feature Engineering  →  Market TCN  →  Deadband Filter  →  Signal
-                      ↑                               ↑                   ↑
-            [Graph Laplacian]           [Causal Dilated Conv]    [Confidence Gate]
-            [Persistent Homology]
-            [Walsh-Hadamard Transform]
-```
-
-Every prediction is **traceable** back to a mathematical concept:
-- *"Why did we short NVDA?"* → Its Laplacian Residual `r > 0`: it's trading above its sector manifold.
-- *"Why did we go to cash?"* → Persistence Entropy dropped sharply: the market topology is collapsing (pre-crash signal).
-- *"Why didn't we buy this dip?"* → Walsh Sequency Score ≈ 0: the residual is trending — a momentum break, not a bounce.
+| Epochs | 30 max | Model still improving at epoch 10 in earlier version |
+| Learning Rate | 1e-3 to 1e-5 (cosine) | Flat LR caused oscillation around minimum |
+| Gradient Clipping | max_norm = 1.0 | Prevents exploding gradients from 16-channel input |
+| Early Stopping | patience = 5 | Prevents overfitting on small training windows |
+| Batch Size | 64 | Standard for this dataset size |
+| Optimiser | Adam | Default for sequence models |
+| Loss | Binary Cross-Entropy | Binary direction prediction task |
 
 ---
 
-## 📐 Mathematical Foundation
+## Walk-Forward Validation
 
-### 1. Laplacian Residuals — The "Locomis" Signal
+| Window | Train Period | Test Period | Regime | Hit Rate |
+|---|---|---|---|---|
+| W3 | 2010-2015 | 2016 | Demonetization | 49.78% |
+| W4 | 2010-2016 | 2017 | GST Launch | 50.12% |
+| W5 | 2010-2017 | 2018 | IL&FS Crisis | 50.89% |
+| W6 | 2010-2018 | 2019 | Elections/Slowdown | 52.13% |
+| W7 | 2010-2019 | 2020 | COVID Crash | 50.98% |
 
-The market is modeled as graph **G = (V, E, W)** where each stock is a node and edge weights are rolling correlations.
-
-The **Normalized Graph Laplacian** is:
-
-```
-L = I - D^(-1/2) · A · D^(-1/2)
-```
-
-The **Laplacian Residual** for asset `i` at time `t`:
-
-```
-r_i = (L · r_t)_i
-```
-
-This measures how much an asset's return *diverges* from its graph-neighborhood:
-- `r_i > 0` → Asset is overheated relative to peers → **Short signal**
-- `r_i < 0` → Asset is oversold relative to peers → **Long signal**
-- `r_i ≈ 0` → Asset is at manifold equilibrium → **Neutral**
-
-This is fundamentally superior to simple pair trading — it considers the **entire neighborhood structure** simultaneously.
-
-### 2. Topological Data Analysis — Regime Detection
-
-The pairwise correlation distance matrix `d(i,j) = sqrt(2*(1-ρ_ij))` is fed into **Ripser** to compute persistent homology:
-
-- **H0** (Connected Components): Clusters of synchronized assets. Low entropy → market herding → pre-crash.
-- **H1** (Loops/Cycles): Circular feedback loops between assets. High H1 persistence → systemic fragility.
-
-**Persistence Entropy** (Shannon entropy over feature lifetimes):
-```
-E = -Σ p_i · log(p_i),   p_i = l_i / Σ l_j
-```
-A sudden drop in `E` is a robust **crisis early warning signal** — it fires *before* VIX spikes.
-
-### 3. Walsh-Hadamard Sequency Filter
-
-Unlike Fourier (assumes smooth, continuous signals), the Walsh-Hadamard Transform (WHT) decomposes signals into ±1 rectangular waves — perfectly suited for the **fractal, discontinuous** nature of financial data.
-
-```
-W = H · ε_t     (H = 32x32 Hadamard matrix, ε_t = residual window)
-```
-
-**Sequency Score** = Energy in high-sequency coefficients / Total energy
-
-- Score ≈ 1 → Signal oscillates rapidly (mean-reverting elastic bounce) → **Safe to trade**
-- Score ≈ 0 → Signal trends persistently (structural break / momentum) → **Do NOT trade**
-
-### 4. Market TCN Architecture
-
-```
-Input: (Batch, 12 Channels, 64 Time Steps)
-         ↓
-  ┌──────────────────────────────────┐
-  │  TemporalBlock (dilation=1)       │  ← Short-term volatility patterns
-  │  TemporalBlock (dilation=2)       │  ← Weekly momentum
-  │  TemporalBlock (dilation=4)       │  ← Monthly trends  
-  │  TemporalBlock (dilation=8)       │  ← Quarterly cycles
-  └──────────────────────────────────┘
-         ↓
-  Linear(32 → 1) + Sigmoid
-         ↓
-  P(next-day return > 0)
-```
-
-**Causal padding** (Chomp1d) guarantees **zero look-ahead bias** — the output at time `t` is a function only of `t, t-1, t-2, ...`
-
-Each TemporalBlock uses **weight-normalized SELU activations** with residual connections for gradient stability.
+Each window trains strictly on prior data and tests on the immediately following unseen year — no look-ahead bias.
 
 ---
 
-## 🧩 The 12-Channel Feature Tensor
+## Baseline Comparison
 
-Each asset is encoded into a `(12 × 64)` matrix:
-
-| Channel | Name | Description |
-|---------|------|-------------|
-| C1 | Log Returns | `ln(P_t / P_{t-1})` |
-| C2 | Normalized Volume | `ln((V_t+1) / (V_{t-1}+1))` |
-| C3 | RSI [0,1] | 14-period RSI scaled to unit range |
-| C4 | MACD (Z-score) | MACD histogram, rolling 64-day normalized |
-| C5 | ATR/Price | Average True Range normalized by Close |
-| C6 | Bollinger %B | Position within Bollinger Bands |
-| C7 | Price Z-Score | 50-day detrended price z-score |
-| C8 | **Laplacian Residual** | Geometric Alpha — "Locomis" signal |
-| C9 | **Walsh Sequency Score** | Mean-reversion vs momentum discriminator |
-| C10 | **H0 Persistence Entropy** | Market connectedness / clustering |
-| C11 | **H1 Persistence Entropy** | Topological loop complexity |
-| C12 | SPY Beta | Market-relative exposure proxy |
-
-Channels C8–C11 are the novel **geometric features** — not present in any standard trading system.
+| Model | Category | Mean Hit Rate W3-W7 |
+|---|---|---|
+| TopoTrader (this work) | DL Topological | **50.78%** |
+| TCN 7 std indicators | DL Ablation | 50.96% (p=0.73 vs TopoTrader) |
+| LSTM OHLCV 5ch | DL Ablation | 51.61% |
+| Logistic Regression 16ch | Classical ML | 53.89% (trades 0.5% of days only) |
+| Random Forest 16ch | Classical ML | 53.38% (trades 2.2% of days only) |
+| RSI Threshold | Technical | 51.34% |
+| Bollinger %B | Technical | 51.59% |
+| MACD Crossover | Technical | 49.73% |
+| Always-Up | Naive | 50.43% |
+| Momentum-1 | Naive | 48.88% |
+| Momentum-5 | Naive | 48.82% |
 
 ---
 
-## ⚙️ Risk Management & Execution
+## Statistical Validation
 
-The backtester implements a 3-stage execution pipeline:
+### V2 vs 50% Random Chance (Binomial Test)
 
-```
-TCN Probability
-      │
-      ▼
- Topological Veto ──── H0 Entropy < threshold → HALT (Go to Cash)
-      │
-      ▼
- Deadband Filter ────  P > 0.55 → Long
-                       P < 0.45 → Short
-                       else     → Neutral (No Trade)
-      │
-      ▼
- Volatility Scaling ── size = (Target Vol 20%) / ATR × Capital
-                       capped at 2× leverage
-      │
-      ▼
- Signed Position Size ($)
-```
+| Window | Regime | Hit Rate | n trades | p-value |
+|---|---|---|---|---|
+| W3 | Demonetization | 49.78% | 6,577 | 0.73 |
+| W4 | GST Launch | 50.12% | 5,142 | 0.88 |
+| W5 | IL&FS Crisis | 50.89% | 4,309 | 0.25 |
+| W6 | Elections | 52.13% | 3,998 | **0.0075** |
+| W7 | COVID Crash | 50.98% | 5,836 | 0.14 |
+| **Pooled W3-W7** | | **50.67%** | **25,862** | **0.033** |
 
-This ensures the system:
-1. **Sits out** during topological market crises (H0 entropy collapse)
-2. **Only trades** high-conviction signals (deadband filter)
-3. **Scales down** automatically in high-volatility regimes (inverse vol sizing)
+### V2 vs Baselines (Paired t-test, n=5 windows)
+
+| Baseline | Mean Diff | p-value | Significant |
+|---|---|---|---|
+| Momentum-5 | +1.96 pp | 0.0016 | Yes |
+| MACD Crossover | +1.05 pp | 0.0120 | Yes |
+| Momentum-1 | +1.90 pp | 0.0212 | Yes |
+| TCN-7ch (fair) | -0.18 pp | 0.73 | No (parity) |
 
 ---
 
-## 🗂️ Project Structure
+## Transaction Cost Analysis (NSE)
+
+```
+Round-trip cost at Zerodha-class broker:   0.208%
+Break-even hit rate required:              50.10%
+TopoTrader pooled hit rate:                50.67%
+Edge above break-even:                    +0.57 pp  -> Profitable
+```
+
+---
+
+## Tech Stack
+
+| Package | Purpose |
+|---|---|
+| torch + CUDA | Model training and inference |
+| numpy / pandas | Data processing and feature computation |
+| ripser | Persistent Homology via Vietoris-Rips filtration |
+| scipy | Statistical tests (binomial, t-test, Wilson CI) |
+| scikit-learn | Logistic Regression, Random Forest baselines |
+| python-dotenv | Environment variable management |
+
+---
+
+## Project Structure
 
 ```
 summer_internsip-main/
+├── run_training_v2.py             # Main entry: full walk-forward training + evaluation
+├── baseline_comparison.py         # 10-baseline comparison suite (fair training)
+├── statistical_significance.py    # Binomial + paired t-tests + Wilson CIs
+├── portfolio_backtest.py          # NSE transaction cost + break-even analysis
 │
-├── topo_trader/                    # Core library
-│   ├── strategies/
-│   │   ├── topology_engine.py      # TDA: Ripser → Persistence Entropy (H0, H1)
-│   │   ├── graph_engine.py         # SGT: Normalized Laplacian Residuals
-│   │   └── walsh_filter.py         # WHT: Sequency Score computation
-│   │
+├── topo_trader/
+│   ├── train.py                   # train_model() with cosine LR, grad clip, early stopping
 │   ├── models/
-│   │   ├── tcn.py                  # MarketTCN: Dilated Causal TCN (PyTorch)
-│   │   └── tcn_full.pth            # Pre-trained model weights
-│   │
-│   ├── utils/
-│   │   ├── data_loader.py          # yfinance → feature pipeline (parallelized)
-│   │   └── indicators.py           # Technical indicator library (C1–C7, C12)
-│   │
-│   ├── backtester.py               # Risk management & execution logic
-│   ├── train.py                    # Training loop (BCELoss + Adam)
-│   └── requirements.txt
+│   │   └── tcn.py                 # MarketTCN: 4-block dilated causal TCN
+│   ├── strategies/
+│   │   ├── graph_engine.py        # Laplacian residual (original reference)
+│   │   └── gat_engine.py          # Graph Attention Engine (C8)
+│   ├── evaluation/
+│   │   └── walk_forward.py        # Walk-forward windows + dataset builder + normalisation
+│   └── utils/
+│       └── data_loader.py         # NSE CSV + full 16-channel feature generation
 │
-├── asset_evaluation/
-│   ├── run_asset_evaluation.py     # Per-asset backtesting & performance metrics
-│   ├── asset_performance_metrics.csv
-│   ├── asset_sharpe_ranking.png    # Top-25 assets by Sharpe ratio
-│   ├── asset_performance_scatter.png
-│   ├── equity_curve.png
-│   ├── market_graph_crash.png      # Market topology during COVID crash (2020-03-20)
-│   ├── market_graph_normal.png     # Market topology during stable period (2021-01-15)
-│   └── residual_heatmap.png        # Locomis heatmap across all assets × time
-│
-├── run_training_full.py            # End-to-end training runner (2015→2023)
-├── verify_pipeline.py              # Fast smoke-test with 4 tickers
-├── visualize.py                    # Market graph, equity curves, confusion matrix
-└── research_paper.pdf              # Full academic survey (this paper)
+└── reports/
+    ├── walk_forward_india.csv
+    ├── baseline_comparison_india.csv
+    ├── statistical_significance_v2.csv
+    └── portfolio_backtest.csv
 ```
 
 ---
 
-## 🚀 Quick Start
+## Setup and Running
 
-### Prerequisites
-
-```bash
-pip install -r topo_trader/requirements.txt
-```
-
-**Key dependencies:**
-- `ripser` — Persistent homology computation
-- `torch` — MarketTCN training and inference
-- `yfinance` — Market data fetching
-- `scipy` — Hadamard matrix and fractional matrix power
-- `joblib` — Parallel feature computation
-
-### Step 1: Verify the Pipeline (Smoke Test)
-
-Runs with only 4 tickers (AAPL, MSFT, GOOGL, SPY) on a short window — takes ~2 minutes:
+### 1. Install
 
 ```bash
-cd summer_internsip-main
-python verify_pipeline.py
+git clone https://github.com/Asdortop/TopoTrader---Topological-Geometric-Trading-System.git
+cd TopoTrader---Topological-Geometric-Trading-System/summer_internsip-main
+
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate     # Mac/Linux
+
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+pip install numpy pandas scipy scikit-learn ripser python-dotenv
 ```
 
-Expected output:
-```
-=== Starting Verification Pipeline ===
-Feature generation successful.
-AAPL Feature Columns: ['C1_LogRet', 'C2_Vol', ..., 'C12_Beta']
-Dataset created. X shape: (Nx, 12, 64), y shape: (Nx,)
-Model training successful.
-Backtest Position Size: 12345.6
-=== Verification Complete: SUCCESS ===
-```
-
-### Step 2: Train the Full Model
-
-Downloads ~55 assets from 2015–2024 (cached after first run), computes all 12 features in parallel, trains the TCN on 2015–2021 and validates on 2022–2023:
+### 2. Run Walk-Forward Training
 
 ```bash
-python run_training_full.py
+python run_training_v2.py
 ```
 
-Training summary:
-- **Universe**: 55 assets (S&P 100 + Major Tech + Liquid ETFs)
-- **Train period**: 2015–01–01 to 2021–12–31
-- **Validation period**: 2022–01–01 to 2023–12–31
-- **Architecture**: MarketTCN — 4 dilated temporal blocks, 32 channels, kernel size 3
-- **Output**: `topo_trader/models/tcn_full.pth`
-
-### Step 3: Evaluate Per-Asset Performance
-
-Runs inference on the 2024–2025 out-of-sample period and saves per-asset Sharpe ratios, annual returns, and max drawdowns:
+### 3. Run Baseline Comparison
 
 ```bash
-python asset_evaluation/run_asset_evaluation.py
+python baseline_comparison.py --market india
 ```
 
-Outputs saved to `asset_evaluation/`:
-- `asset_performance_metrics.csv` — Full metrics table
-- `asset_sharpe_ranking.png` — Top-25 assets ranked by strategy Sharpe
-- `asset_performance_scatter.png` — Sharpe vs Annual Return scatter (colored by hit rate)
-
-### Step 4: Visualize Market Topology
+### 4. Run Statistical Tests
 
 ```bash
-python visualize.py
+python statistical_significance.py
 ```
 
-Generates:
-- **`market_graph_crash.png`** — The market correlation graph during COVID crash (2020-03-20): dense, highly connected topology
-- **`market_graph_normal.png`** — The same graph during a stable period (2021-01-15): sparse, modular topology
-- **`residual_heatmap.png`** — The Locomis (Laplacian Residual) heatmap across all assets × time
-- **Per-ticker** equity curves, return distributions, and confusion matrices
+### 5. Run Portfolio Backtest
+
+```bash
+python portfolio_backtest.py
+```
 
 ---
 
-## 📊 Sample Results
+## Known Limitations
 
-### Market Topology Comparison
-
-The graph below illustrates a core insight of the paper: **market topology changes before volatility spikes**.
-
-| Normal Market (Jan 2021) | COVID Crash (Mar 2020) |
-|:---:|:---:|
-| Sparse edges, modular clusters | Dense edges, single mega-cluster |
-| High Persistence Entropy → diverse | Low Persistence Entropy → herding |
-| TDA says: Normal regime | TDA says: HALT — Crisis signal |
-
-### Key Performance Observations
-
-- The **Topological Veto** successfully filters trades during regime collapses, reducing max drawdown
-- The **Walsh Sequency Filter** significantly improves Sharpe by avoiding false mean-reversion trades during momentum breaks
-- The **12-channel geometric tensor** enables the TCN to learn market structure rather than memorizing price coincidences
-
----
-
-## 🆚 Why Not Just Use an LSTM?
-
-| Dimension | LSTM / GRU | TopoTrader (TCN + Geometry) |
-|---|---|---|
-| **Market Structure** | Ignores — treats assets as isolated vectors | Explicit — Laplacian encodes sector relationships |
-| **Regime Awareness** | Reactive — adapts only after losses | Predictive — TDA detects crashes before VIX spikes |
-| **Memory Horizon** | ~200–500 steps (forgets distant past) | 2,000+ steps via dilated convolutions |
-| **Training Speed** | Sequential — no parallelism | Fully parallel on GPU |
-| **Gradient Stability** | Vanishing gradient via BPTT | Stable — depth-determined gradient path |
-| **Interpretability** | Black box — hidden states are opaque | Grey box — traceable to Laplacian/TDA features |
-| **Data Leakage Risk** | High — easy to accidentally use future data | Zero — causal convolutions with Chomp1d |
-
-Benchmark: In the Copy Memory Task (Bai et al., 2018), TCN maintained **100% accuracy** for sequences > T=1000 where LSTMs degraded to **random guessing** at T≈200. In finance, this matters — a model that cannot remember 2008 cannot prepare for 2020.
-
----
-
-## 📄 Research Paper
-
-The full academic survey is included at [`research_paper.pdf`](research_paper.pdf).
-
-**Abstract:** This paper explores the emerging paradigm of Geometric Deep Learning in finance, positing that market data resides on irregular, non-Euclidean manifolds. It critically reviews the integration of:
-1. Graph Signal Processing (GSP) for isolating "Locomis" (Local Mispricing) via Laplacian diffusion
-2. Topological Data Analysis (TDA) for detecting structural regime shifts via persistent homology
-3. Causal Temporal Convolutional Networks (TCNs) for capturing long-range dependencies without data leakage
-
-**Authors:** Vaibhavi A, Tejas G, Harinath K, Vamshi S, Pranav T  
-**Institution:** VNR Vignana Jyothi Institute of Engineering & Technology, Hyderabad  
-**Department:** Computer Science and Engineering (AIML)
-
----
-
-## 🔧 Configuration Reference
-
-**Feature computation windows:**
-
-| Parameter | Value | Where |
-|---|---|---|
-| Lookback window | 64 days | `data_loader.py`, `train.py` |
-| Walsh window | 32 days | `walsh_filter.py` |
-| Correlation threshold τ | 0.5 | `graph_engine.py` |
-| H0/H1 maxdim | 1 | `topology_engine.py` |
-
-**TCN hyperparameters:**
-
-| Parameter | Value |
+| Limitation | Notes |
 |---|---|
-| Input channels | 12 |
-| Hidden channels | [32, 32, 32, 32] |
-| Kernel size | 3 |
-| Dilation | 2^i per layer |
-| Dropout | 0.2 |
-| Activation | SELU |
-
-**Trading parameters:**
-
-| Parameter | Value | Description |
-|---|---|---|
-| Long threshold | 0.55 | Min probability for long signal |
-| Short threshold | 0.45 | Max probability for short signal |
-| Target volatility | 20% | Inverse vol position sizing |
-| Max leverage | 2× | Volatility scaling cap |
-| Crash threshold | H0 entropy < 1.0 | Topological halt trigger |
+| Architecture mismatch | Flat TCN applies same filters to temporal momentum and instantaneous topological features |
+| No significant edge over 7ch-TCN | V2 at parity with well-trained TCN-7ch (p=0.73) |
+| Single-facet graph nodes | Each stock is one node — cannot represent companies with multiple economic roles |
+| No live trading integration | Research-grade system only |
 
 ---
 
-## 📦 Dependencies
+## Future Work
 
-```
-yfinance        # Market data
-numpy           # Numerical computation
-pandas          # Data manipulation
-scipy           # Hadamard matrix, linear algebra
-ripser          # Persistent homology (TDA)
-persim          # Persistence diagram distances
-torch           # MarketTCN (PyTorch)
-scikit-learn    # Metrics and utilities
-joblib          # Parallel feature computation
-pyarrow         # Parquet caching
-tqdm            # Progress bars
-matplotlib      # Visualization
-seaborn         # Statistical plots
-networkx        # Market graph rendering
-```
+| Improvement | Expected Impact |
+|---|---|
+| Channel Attention (SE-Net) | Learns to upweight GAT/TDA in crash regimes, RSI/MACD in bull |
+| Dual-Branch TCN | Separate branches for price features vs topological features |
+| Mixture of Experts | Regime-specialist models gated by a regime detector |
+| Multi-relational Graph | Separate edge types for sector, supply chain, macro exposure |
 
 ---
 
-## 🗺️ Roadmap
+## License
 
-- [ ] Dynamic graph construction using multi-head attention (GGSD)
-- [ ] Chebyshev polynomial approximation for O(K|E|) spectral filtering
-- [ ] Live data ingestion and real-time signal generation
-- [ ] Relation-aware GCN layer (supplier / competitor edge types)
-- [ ] Hurst Exponent and Betti-1 count as additional channels (C13, C14)
-- [ ] Portfolio-level optimization with topological risk budgeting
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-## 👥 Authors
-
-**Vaibhavi A · Tejas G · Harinath K · Vamshi S · Pranav T**  
-Department of Computer Science and Engineering (AIML)  
-VNR Vignana Jyothi Institute of Engineering & Technology, Hyderabad, India
-
----
-
-*"The markets are not merely a collection of random walks; they are a cohesive, vibrating structure — a manifold defined by economic relationships."*  
-— from the research paper
+Built using PyTorch, Ripser, Graph Attention Networks, and Persistent Homology.
