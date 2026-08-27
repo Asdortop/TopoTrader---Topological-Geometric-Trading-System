@@ -49,34 +49,34 @@ Unlike standard quantitative models that rely on price/volume indicators alone, 
 
 ```mermaid
 flowchart TD
-    RAW(["📂 NSE Nifty-50 CSV Data — 49 tickers, 2010-2021"]) --> TECH
+    RAW(["NSE Nifty-50 Raw Data - 49 tickers, 2010-2021"]) --> TECH
     RAW --> GAT
     RAW --> WALSH
     RAW --> TDA
     RAW --> REGIME
 
-    TECH["📉 Standard Technical Indicators\nC1-C7: LogRet, Vol, RSI, MACD, ATR, BB, ZScore"] --> MERGE
-    GAT["🕸️ Graph Attention Engine\nC8: Adaptive correlation graph\nLearned attention-weighted aggregation"] --> MERGE
-    WALSH["🌊 Walsh Spectral Scorer\nC9: Binary return synchronisation\nacross full stock universe"] --> MERGE
-    TDA["🔺 Persistent Homology — Ripser\nC10: H0 Entropy — market fragmentation\nC11: H1 Entropy — topological loops\nC12: Beta Stability — structural drift rate"] --> MERGE
-    REGIME["🚦 Regime Classifier\nC13-C16: One-hot labels\nCrash / High-Vol / Bull / Sideways"] --> MERGE
+    TECH["Standard Technical Indicators\nC1-C7: LogRet, Vol, RSI, MACD, ATR, BB, ZScore"] --> MERGE
+    GAT["Graph Attention Engine\nC8: Adaptive correlation graph\nLearned attention-weighted aggregation"] --> MERGE
+    WALSH["Walsh Spectral Scorer\nC9: Binary return synchronisation\nacross full stock universe"] --> MERGE
+    TDA["Persistent Homology via Ripser\nC10: H0 - market fragmentation\nC11: H1 - topological loops\nC12: Beta Stability - structural drift"] --> MERGE
+    REGIME["Regime Classifier\nC13-C16: One-hot labels\nCrash, High-Vol, Bull, Sideways"] --> MERGE
 
-    MERGE["🔀 Merged Feature Tensor\n16 channels x 64 time steps\nper stock per day"] --> WFV
+    MERGE["Merged Feature Tensor\n16 channels x 64 time steps\nper stock per day"] --> WFV
 
-    WFV["🔁 Walk-Forward Validation\nTrain on all prior years\nTest strictly on next year only"] --> TCN
+    WFV["Walk-Forward Validation\nTrain on all prior years\nTest strictly on next year only"] --> TCN
 
-    TCN["🧠 MarketTCN\n4x Dilated Causal Temporal Blocks\nDilation 1-2-4-8, Kernel=3, 32 filters\nSELU + WeightNorm + Residual Skip"] --> OUT
+    TCN["MarketTCN\n4x Dilated Causal Temporal Blocks\nDilation 1-2-4-8, Kernel=3, 32 filters\nSELU + WeightNorm + Residual Skip"] --> OUT
 
-    OUT["🎯 Output: P next-day return > 0\none probability per stock per day"] --> FILTER
+    OUT["Output: Probability next-day return is positive\none value per stock per day"] --> FILTER
 
-    FILTER{"Confidence\nDeadband Filter"} -->|"prob > 0.55"| LONG["📈 Long Signal"]
-    FILTER -->|"prob < 0.45"| SHORT["📉 Short Signal"]
-    FILTER -->|"0.45 to 0.55"| SKIP["⬛ No Trade"]
+    FILTER{"Confidence\nDeadband Filter"} -->|"prob above 0.55"| LONG["Long Signal"]
+    FILTER -->|"prob below 0.45"| SHORT["Short Signal"]
+    FILTER -->|"0.45 to 0.55"| SKIP["No Trade - skip"]
 
     LONG --> EVAL
     SHORT --> EVAL
 
-    EVAL["📊 Evaluation\nHit Rate on confident trades\nBinomial p-value + Wilson 95% CI\nNSE Transaction Cost Break-even\nPaired t-test vs 10 baselines"]
+    EVAL["Evaluation Suite\nHit Rate on confident trades\nBinomial test p=0.033, Wilson 95% CI\nNSE break-even analysis\nPaired t-test vs 10 baselines"]
 
     style TECH fill:#3b82f6,color:#fff
     style GAT fill:#ef4444,color:#fff
