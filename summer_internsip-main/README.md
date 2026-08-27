@@ -49,62 +49,44 @@ Unlike standard quantitative models that rely on price/volume indicators alone, 
 
 ```mermaid
 flowchart TD
-    RAW([📂 NSE Nifty-50 CSV Data\n49 tickers · 2010–2021]) --> FE
+    RAW(["📂 NSE Nifty-50 CSV Data — 49 tickers, 2010-2021"]) --> TECH
+    RAW --> GAT
+    RAW --> WALSH
+    RAW --> TDA
+    RAW --> REGIME
 
-    subgraph FE[🔧 Feature Engineering Pipeline — 16 Channels]
-        direction TB
-        TECH[📉 Standard Technical Indicators\nC1–C7: LogRet · Vol · RSI · MACD · ATR · BB · ZScore]
-        GAT[🕸️ Graph Attention Engine\nC8: Adaptive correlation graph\nAttention-weighted neighbour aggregation]
-        WALSH[🌊 Walsh Spectral Scorer\nC9: Binary return synchronisation\nacross stock universe]
-        TDA[🔺 Persistent Homology\nC10: H0 Entropy — market fragmentation\nC11: H1 Entropy — topological loops\nC12: Beta Stability — structural drift]
-        REGIME[🚦 Regime Classifier\nC13–C16: One-hot labels\nCrash · High-Vol · Bull · Sideways]
-    end
+    TECH["📉 Standard Technical Indicators\nC1-C7: LogRet, Vol, RSI, MACD, ATR, BB, ZScore"] --> MERGE
+    GAT["🕸️ Graph Attention Engine\nC8: Adaptive correlation graph\nLearned attention-weighted aggregation"] --> MERGE
+    WALSH["🌊 Walsh Spectral Scorer\nC9: Binary return synchronisation\nacross full stock universe"] --> MERGE
+    TDA["🔺 Persistent Homology — Ripser\nC10: H0 Entropy — market fragmentation\nC11: H1 Entropy — topological loops\nC12: Beta Stability — structural drift rate"] --> MERGE
+    REGIME["🚦 Regime Classifier\nC13-C16: One-hot labels\nCrash / High-Vol / Bull / Sideways"] --> MERGE
 
-    FE -->|16 × 64 window per stock per day| WF
+    MERGE["🔀 Merged Feature Tensor\n16 channels x 64 time steps\nper stock per day"] --> WFV
 
-    subgraph WF[🔁 Walk-Forward Validation — 5 Windows]
-        direction LR
-        W3[W3 · 2016\nDemonetization]
-        W4[W4 · 2017\nGST Launch]
-        W5[W5 · 2018\nIL&FS Crisis]
-        W6[W6 · 2019\nElections]
-        W7[W7 · 2020\nCOVID Crash]
-    end
+    WFV["🔁 Walk-Forward Validation\nTrain on all prior years\nTest strictly on next year only"] --> TCN
 
-    WF -->|Train on all prior years\nTest on next year only| TRAIN
+    TCN["🧠 MarketTCN\n4x Dilated Causal Temporal Blocks\nDilation 1-2-4-8, Kernel=3, 32 filters\nSELU + WeightNorm + Residual Skip"] --> OUT
 
-    subgraph TRAIN[🧠 MarketTCN Training]
-        direction TB
-        TCN[Causal TCN · 4 Dilated Blocks\nKernel=3 · Dilation=1,2,4,8 · 32 filters\nSELU · Weight Norm · Residual skip]
-        OPT[Cosine LR: 1e-3 → 1e-5\nGradient Clip: max_norm=1.0\nEarly Stopping: patience=5]
-        NORM[Selective Z-score Normalisation\nC1–C7 only · C8–C16 preserved in natural units]
-    end
+    OUT["🎯 Output: P next-day return > 0\none probability per stock per day"] --> FILTER
 
-    TRAIN --> PRED[🎯 Prediction Output\nP(next-day return > 0)\nper stock · per day]
-
-    PRED --> FILTER{Confidence\nDeadband Filter}
-    FILTER -->|prob > 0.55| LONG[📈 Long Signal]
-    FILTER -->|prob < 0.45| SHORT[📉 Short Signal]
-    FILTER -->|0.45 ≤ prob ≤ 0.55| FLAT[⬛ No Trade]
+    FILTER{"Confidence\nDeadband Filter"} -->|"prob > 0.55"| LONG["📈 Long Signal"]
+    FILTER -->|"prob < 0.45"| SHORT["📉 Short Signal"]
+    FILTER -->|"0.45 to 0.55"| SKIP["⬛ No Trade"]
 
     LONG --> EVAL
     SHORT --> EVAL
 
-    subgraph EVAL[📊 Evaluation Suite]
-        direction TB
-        HR[Hit Rate\non confident trades]
-        SIG[Statistical Tests\nBinomial · Wilson CI\nPaired t-test vs 10 baselines]
-        TC[Transaction Cost Analysis\nNSE break-even 50.10%]
-    end
+    EVAL["📊 Evaluation\nHit Rate on confident trades\nBinomial p-value + Wilson 95% CI\nNSE Transaction Cost Break-even\nPaired t-test vs 10 baselines"]
 
     style TECH fill:#3b82f6,color:#fff
     style GAT fill:#ef4444,color:#fff
     style WALSH fill:#8b5cf6,color:#fff
     style TDA fill:#10b981,color:#fff
     style REGIME fill:#f97316,color:#fff
+    style MERGE fill:#64748b,color:#fff
     style TCN fill:#a855f7,color:#fff
-    style OPT fill:#ec4899,color:#fff
-    style NORM fill:#eab308,color:#000
+    style EVAL fill:#0ea5e9,color:#fff
+    style FILTER fill:#374151,color:#fff
 ```
 
 ---
