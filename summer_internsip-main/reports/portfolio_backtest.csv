@@ -1,0 +1,9 @@
+model,CAGR_%,Sharpe,MaxDD_%,win_rate_%,net_edge_%
+Logistic Regression (16ch),7.9,-3.486,-58.07,53.9,7.576
+Random Forest (16ch),65.8,-4.253,-91.8,53.4,6.56
+LSTM - OHLCV only (5ch),16.49,-4.449,-99.28,52.0,3.712
+TCN - Std Indicators (7ch),-39.14,-4.473,-86.9,51.0,1.816
+V2 (TopoTrader),-61.21,-4.977,-100.0,50.8,1.352
+Always-Up,-162.95,-5.032,-100.0,50.4,0.66
+Momentum-1,-421.75,-5.535,-100.0,48.9,-2.452
+Momentum-5,-425.46,-5.547,-100.0,48.8,-2.564

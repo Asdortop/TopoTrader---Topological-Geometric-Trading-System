@@ -1,0 +1,4 @@
+version,window,regime_label,test_period,overall_accuracy,hit_rate,confident_trade_pct,n_test
+v1,1,Stable Bull,2018-01-01 -> 2018-12-31,0.5417,0.6217,0.3131,10788
+v1,2,Q4-2018 Recovery,2019-01-01 -> 2019-12-31,0.5544,0.6285,0.3628,10846
+v1,3,COVID Crash,2020-01-01 -> 2020-12-31,0.5639,0.6068,0.533,10904

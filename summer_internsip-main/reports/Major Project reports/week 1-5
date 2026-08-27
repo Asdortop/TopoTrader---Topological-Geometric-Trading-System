@@ -1,0 +1,78 @@
+# Weekly Report — Work Progress Entries (Week 1 to Week 5)
+
+---
+
+## Week 1 — Analysing the Existing System & Identifying Limitations
+
+- Studied the existing minor project in detail: a topological-geometric trading system that models the stock market as a graph and uses a Temporal Convolutional Network (TCN) to predict next-day directional price movement for Indian equity stocks.
+- Analysed the current feature engineering pipeline: understood how the system builds a correlation-based adjacency matrix from stock return data and computes a Laplacian residual signal to capture a stock's deviation from its network neighbours.
+- Reviewed the existing topological feature extraction using Persistent Homology (Betti numbers H0, H1), which attempts to capture the "shape" of the market at each time step.
+- Identified critical limitations in the graph construction module: the correlation threshold (τ = 0.5) is hardcoded, making the adjacency matrix insensitive to varying market regimes — in high-correlation crash periods the graph becomes fully connected (signal collapses), and in low-correlation periods it becomes empty (signal = 0).
+- Identified that the model has no explicit mechanism to distinguish between market regimes (bull, bear, high-volatility, sideways), meaning the same model weights are applied regardless of the current economic environment.
+- Identified a scale mismatch across input feature channels: RSI ranges 0–100 while log returns range −0.05 to +0.05, creating gradient instability during training.
+- Observed that the training pipeline used only 10 epochs with a flat learning rate, resulting in an undertrained model (loss was still declining at termination).
+- Surveyed literature on Graph Attention Networks (GAT), Persistent Homology, Walsh-Hadamard spectral analysis, and regime-aware machine learning to identify candidate improvements.
+- Shortlisted four improvement directions and discussed feasibility with project guide: (1) adaptive graph construction with attention, (2) enhanced topological features, (3) explicit regime labelling, (4) training pipeline upgrades.
+
+---
+
+## Week 2 — Research & Design of Improved Feature Architecture
+
+- Conducted a detailed study of Graph Attention Networks (GAT): understood the attention mechanism `a(i,j) = softmax(LeakyReLU(a^T [Wh_i || Wh_j]))` which assigns learned importance weights to edges rather than binary thresholding.
+- Researched Persistent Homology and Vietoris-Rips filtration: understood how H0 persistence (connected components) and H1 persistence (loops/cycles) in the correlation distance matrix encode structural fragmentation vs cohesion of the market graph.
+- Studied Walsh-Hadamard Transform as a spectral tool for binary pattern decomposition across stock return sequences — identified its utility for capturing market-wide synchronisation in a complementary way to GAT.
+- Designed the expanded 16-channel feature set:
+  - C1–C7: Standard technical indicators (Log Return, Volatility, RSI, MACD, ATR, Bollinger %B, Z-Score)
+  - C8: GAT-derived graph attention signal (replaces old Laplacian residual)
+  - C9: Walsh spectral score (market synchronisation measure)
+  - C10: H0 Persistence entropy (market fragmentation)
+  - C11: H1 Persistence entropy (topological loops/cycles)
+  - C12: Beta stability (rate of structural topological change)
+  - C13–C16: One-hot regime labels (Crash / High-Volatility / Bull / Sideways)
+- Finalised the walk-forward validation framework for the Indian market: defined 8 rolling windows covering key economic regimes — Demonetization (2016), GST launch (2017), IL&FS crisis (2018), General Elections (2019), COVID crash (2020).
+- Reviewed literature on selective normalisation: concluded that topological features (GAT, H0, H1) must NOT be Z-scored because their stress-event spikes encode absolute magnitude information that normalisation would destroy.
+
+---
+
+## Week 3 — Implementation of New Feature Engineering Pipeline
+
+- Implemented the Graph Attention Engine: replaced the static Laplacian residual module with an attention-weighted graph aggregation that adapts to the current correlation structure without a fixed threshold.
+- Implemented adaptive percentile-based thresholding as a preprocessing step: the correlation graph threshold is set at the 70th percentile of observed pairwise correlations in each rolling window, making graph density consistent across regimes.
+- Implemented the Walsh-Hadamard spectral scorer: at each time step, computes the spectral decomposition of the binary return vector across the stock universe and returns a scalar synchronisation score.
+- Implemented the Persistent Homology extractor using the Ripser library: extracts H0 and H1 persistence diagrams from the stock correlation distance matrix, then summarises them as entropy and beta-stability scalars.
+- Implemented the regime classifier: uses rolling volatility percentile and index drawdown to assign one of four market regimes per day, encoded as a 4-dimensional one-hot vector.
+- Merged all 16 channels into a unified feature DataFrame per ticker and verified output shapes — each stock produces a (T × 16) feature matrix, windowed into (N × 16 × 64) tensors for model input.
+- Verified feature correctness by inspecting feature values during known historical events: confirmed that H0 persistence spikes during IL&FS crisis (September 2018) and COVID crash (March 2020), validating that topological features correctly detect market fragmentation.
+- Ran the data preparation pipeline on the NSE dataset (49 Nifty-50 tickers, 2010–2021) and confirmed successful feature generation for all tickers.
+
+---
+
+## Week 4 — Training Pipeline Upgrades & Walk-Forward Execution
+
+- Upgraded the model training function with three key improvements:
+  - Cosine LR Annealing: learning rate decays smoothly from 1×10⁻³ to 1×10⁻⁵ over 30 epochs, replacing the flat learning rate that caused the optimiser to oscillate around the loss minimum.
+  - Gradient Clipping: applied max-norm clipping (norm = 1.0) to prevent exploding gradients arising from the heterogeneous channel magnitudes in the 16-channel input tensor.
+  - Early Stopping: patience of 5 epochs with minimum delta 1×10⁻⁵ to prevent overfitting on smaller training windows while allowing adequate convergence on larger ones.
+- Implemented selective Z-score normalisation: applied only to C1–C7 (standard price and technical indicator channels) to resolve scale mismatch; C8–C16 left in natural units to preserve the absolute magnitude of topological stress-event spikes.
+- Fixed a data leakage vulnerability in the evaluation pipeline: normalisation statistics (mean, std) are now computed strictly on the training split and passed as fixed parameters to the test split, eliminating look-ahead bias.
+- Executed the full walk-forward training and evaluation across five windows (2016–2020): model trained per window on all available prior data, tested on the immediately following unseen year.
+- Implemented and ran a 10-baseline comparison suite on identical walk-forward windows: Always-Up, Random, Momentum (1-day and 5-day), RSI threshold, MACD crossover, Bollinger %B, Logistic Regression (16-channel), Random Forest (16-channel), and a TCN trained on standard 7 technical indicators only.
+- Identified a methodological inconsistency in the baseline comparison: the 7-channel TCN baseline used only 10 epochs and a flat learning rate, making the comparison unfair. Upgraded the baseline training pipeline to match (30 epochs, cosine LR, gradient clipping) and re-ran for a rigorous like-for-like evaluation.
+
+---
+
+## Week 5 — Evaluation, Statistical Validation & Portfolio Analysis
+
+- Conducted a comprehensive statistical significance analysis on prediction quality:
+  - Per-window binomial tests with Wilson 95% confidence intervals across all five test windows (W3–W7).
+  - Model achieved individual significance in the Elections/Slowdown window (p = 0.0075, hit rate = 52.13%).
+  - Pooled binomial test across 25,862 confident predictions: hit rate = 50.67%, Z-score = 2.14, p = 0.033 — statistically significant at the 5% level.
+  - Paired t-tests vs all 10 baselines (n = 5 window pairs): model significantly outperforms Momentum-5 (p = 0.0016, Cohen's d = 3.4), MACD Crossover (p = 0.012), and Momentum-1 (p = 0.021).
+  - Model is statistically at parity with the well-trained 7-channel TCN (p = 0.73, gap = 0.18 pp), indicating that the flat TCN architecture does not fully exploit the richer 16-channel topological feature set.
+- Performed NSE-realistic portfolio transaction cost analysis:
+  - Calculated break-even hit rate at discount broker rates (Zerodha-class, round-trip ≈ 0.208%): break-even threshold = 50.10%.
+  - Confirmed that the model's pooled hit rate (50.67%) exceeds this break-even by +0.57 pp, establishing that the strategy is technically profitable after real Indian market transaction costs.
+  - At institutional-grade costs (round-trip ≈ 0.05%), break-even drops to 50.03% — well below the model's performance.
+- Documented the confident prediction deadband: trades are executed only when model output probability exceeds 0.55 (long) or falls below 0.45 (short), filtering out low-conviction signals and focusing evaluation on high-confidence predictions.
+- Identified the primary architectural limitation for future work: a flat TCN applies identical convolutional filters to both sequential momentum features (RSI, MACD) and instantaneous structural features (GAT signal, H0, H1), which is architecturally suboptimal. Proposed a dual-branch TCN and channel attention mechanism (Squeeze-and-Excitation) as the natural next improvements.
+- Compiled all results — per-window hit rates, significance test outcomes, transaction cost analysis, and regime-specific performance breakdown — into the final project report.

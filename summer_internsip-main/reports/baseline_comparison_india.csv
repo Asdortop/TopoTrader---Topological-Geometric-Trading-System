@@ -1,0 +1,67 @@
+window,regime,test_period,method,category,overall_acc,hit_rate,confident_pct,n_test
+3,Demonetization,2016-01-01 -> 2016-12-31,Always-Up,Naive,0.5051,0.5051,1.0,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,Random,Naive,0.5082,0.509,0.9013,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,Momentum-1,Naive,0.4866,0.4866,1.0,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,Momentum-5,Naive,0.4818,0.4818,1.0,11858
+3,Demonetization,2016-01-01 -> 2016-12-31,RSI Threshold,Technical,0.5061,0.5262,0.3945,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,MACD Crossover,Technical,0.4847,0.4847,1.0,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,Bollinger %B,Technical,0.5025,0.5216,0.425,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,Logistic Regression (16ch),Classical ML,0.5012,0.5188,0.2379,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,Random Forest (16ch),Classical ML,0.5214,0.549,0.3554,12054
+3,Demonetization,2016-01-01 -> 2016-12-31,LSTM - OHLCV only (5ch),DL Ablation,0.509,0.5075,0.3811,8918
+3,Demonetization,2016-01-01 -> 2016-12-31,TCN - Std Indicators (7ch),DL Ablation,0.5045,0.5108,0.576,8918
+4,GST Launch,2017-01-01 -> 2017-12-31,Always-Up,Naive,0.5067,0.5067,1.0,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,Random,Naive,0.497,0.4973,0.9014,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,Momentum-1,Naive,0.4933,0.4933,1.0,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,Momentum-5,Naive,0.4827,0.4827,1.0,11907
+4,GST Launch,2017-01-01 -> 2017-12-31,RSI Threshold,Technical,0.5024,0.529,0.411,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,MACD Crossover,Technical,0.4924,0.4924,1.0,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,Bollinger %B,Technical,0.5043,0.5288,0.42,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,Logistic Regression (16ch),Classical ML,0.5103,0.5024,0.0701,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,Random Forest (16ch),Classical ML,0.5117,0.5246,0.2303,12103
+4,GST Launch,2017-01-01 -> 2017-12-31,LSTM - OHLCV only (5ch),DL Ablation,0.5132,0.5077,0.3108,8967
+4,GST Launch,2017-01-01 -> 2017-12-31,TCN - Std Indicators (7ch),DL Ablation,0.495,0.4979,0.4531,8967
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Always-Up,Naive,0.4982,0.4982,1.0,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Random,Naive,0.507,0.5059,0.9015,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Momentum-1,Naive,0.4876,0.4876,1.0,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Momentum-5,Naive,0.4835,0.4835,1.0,11809
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,RSI Threshold,Technical,0.5006,0.5043,0.3959,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,MACD Crossover,Technical,0.5031,0.5031,1.0,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Bollinger %B,Technical,0.5065,0.5159,0.4353,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Logistic Regression (16ch),Classical ML,0.5014,0.529,0.0732,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,Random Forest (16ch),Classical ML,0.5125,0.5386,0.1511,12005
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,LSTM - OHLCV only (5ch),DL Ablation,0.5105,0.5297,0.3206,8869
+5,IL&FS Crisis,2018-01-01 -> 2018-12-31,TCN - Std Indicators (7ch),DL Ablation,0.4999,0.4977,0.3197,8869
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Always-Up,Naive,0.4967,0.4967,1.0,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Random,Naive,0.4942,0.4931,0.9016,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Momentum-1,Naive,0.4838,0.4838,1.0,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Momentum-5,Naive,0.4958,0.4958,1.0,11760
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,RSI Threshold,Technical,0.5101,0.5229,0.3936,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,MACD Crossover,Technical,0.5026,0.5026,1.0,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Bollinger %B,Technical,0.5127,0.5191,0.4241,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Logistic Regression (16ch),Classical ML,0.5054,0.541,0.0051,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,Random Forest (16ch),Classical ML,0.5051,0.5729,0.066,11956
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,LSTM - OHLCV only (5ch),DL Ablation,0.5044,0.5193,0.3231,8820
+6,Elections/Slowdown,2019-01-01 -> 2019-12-31,TCN - Std Indicators (7ch),DL Ablation,0.5105,0.5345,0.248,8820
+7,COVID Crash,2020-01-01 -> 2020-12-31,Always-Up,Naive,0.515,0.515,1.0,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,Random,Naive,0.4975,0.4961,0.9012,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,Momentum-1,Naive,0.4926,0.4926,1.0,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,Momentum-5,Naive,0.4973,0.4973,1.0,12103
+7,COVID Crash,2020-01-01 -> 2020-12-31,RSI Threshold,Technical,0.4774,0.4847,0.4298,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,MACD Crossover,Technical,0.5035,0.5035,1.0,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,Bollinger %B,Technical,0.4802,0.4943,0.4466,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,Logistic Regression (16ch),Classical ML,0.4996,0.6034,0.0094,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,Random Forest (16ch),Classical ML,0.5072,0.4841,0.0971,12299
+7,COVID Crash,2020-01-01 -> 2020-12-31,LSTM - OHLCV only (5ch),DL Ablation,0.5117,0.5165,0.4794,9163
+7,COVID Crash,2020-01-01 -> 2020-12-31,TCN - Std Indicators (7ch),DL Ablation,0.5091,0.5072,0.2965,9163
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Always-Up,Naive,0.5079,0.5079,1.0,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Random,Naive,0.5074,0.5107,0.9018,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Momentum-1,Naive,0.5198,0.5198,1.0,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Momentum-5,Naive,0.5129,0.5129,1.0,3675
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,RSI Threshold,Technical,0.5187,0.541,0.3839,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,MACD Crossover,Technical,0.5084,0.5084,1.0,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Bollinger %B,Technical,0.5136,0.5103,0.4379,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Logistic Regression (16ch),Classical ML,0.5017,0.6667,0.0093,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,Random Forest (16ch),Classical ML,0.4932,0.4588,0.022,3871
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,LSTM - OHLCV only (5ch),DL Ablation,0.4748,0.4826,0.2735,735
+8,Post-COVID Bull,2021-01-01 -> 2021-04-30,TCN - Std Indicators (7ch),DL Ablation,0.5891,0.6243,0.2354,735

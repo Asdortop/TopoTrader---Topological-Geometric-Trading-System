@@ -1,0 +1,6 @@
+model,regime,n_trades,win_rate_%,CAGR_%,Sharpe,MaxDD_%,net_edge_%
+V2 (TopoTrader),Demonetization,6577,49.8,-159.52,-5.178,-100.0,-0.648
+V2 (TopoTrader),GST Launch,5142,50.1,-100.03,-4.773,-100.0,0.032
+V2 (TopoTrader),IL&FS Crisis,4309,50.9,-37.51,-4.695,-99.99,1.572
+V2 (TopoTrader),Elections/Slowdown,3998,52.1,33.43,-5.066,-99.99,4.052
+V2 (TopoTrader),COVID Crash,5836,51.0,-42.42,-5.172,-100.0,1.752

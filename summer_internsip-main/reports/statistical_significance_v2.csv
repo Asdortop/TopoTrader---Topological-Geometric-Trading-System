@@ -1,0 +1,6 @@
+window,regime,hit_rate,n_confident,wilson_lo,wilson_hi,p_value,significant
+3,Demonetization,0.4978,6577,0.4857,0.5099,0.7299,✗
+4,GST Launch,0.5012,5142,0.4875,0.5148,0.8781,✗
+5,IL&FS Crisis,0.5089,4309,0.494,0.5238,0.247,✗
+6,Elections/Slowdown,0.5213,3998,0.5058,0.5367,0.0075,✓
+7,COVID Crash,0.5098,5836,0.4969,0.5226,0.1391,✗

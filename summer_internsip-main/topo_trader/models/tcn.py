@@ -52,7 +52,20 @@ class TemporalBlock(nn.Module):
         return out + res
 
 class MarketTCN(nn.Module):
-    def __init__(self, num_inputs=12, num_channels=[32, 32, 32, 32], kernel_size=3, dropout=0.2):
+    def __init__(self, num_inputs=16, num_channels=[32, 32, 32, 32], kernel_size=3, dropout=0.2):
+        """
+        Causal Temporal Convolutional Network for market return prediction.
+
+        V2 change: num_inputs=16 (was 12).
+        New channels C13-C16 carry market regime one-hot labels, giving the
+        model explicit awareness of crash / high-vol / bull / sideways regimes.
+
+        Args:
+            num_inputs: Number of input channels (16 in V2, 12 in V1).
+            num_channels: Hidden channels per TemporalBlock.
+            kernel_size: Convolution kernel size.
+            dropout: Dropout probability.
+        """
         super(MarketTCN, self).__init__()
         
         layers = []

@@ -1,5 +1,26 @@
+"""
+Graph Engine -- V1 Laplacian Signal
+====================================
+V1: Static 0.5 correlation threshold + Normalized Laplacian formula.
+V2: See gat_engine.py -- Adaptive threshold + Attention-weighted aggregation.
+"""
+
 import numpy as np
 from scipy.linalg import fractional_matrix_power
+
+
+def get_adaptive_threshold(corr_matrix: np.ndarray, percentile: int = 70) -> float:
+    """
+    Compute percentile-based adaptive threshold for the correlation graph.
+    Convenience wrapper -- same logic as in gat_engine.py.
+    """
+    n   = corr_matrix.shape[0]
+    idx = np.triu_indices(n, k=1)
+    vals = np.abs(corr_matrix[idx])
+    if len(vals) == 0:
+        return 0.5
+    return max(float(np.percentile(vals, percentile)), 0.10)
+
 
 def get_laplacian_residuals(returns_window, threshold=0.5):
     """

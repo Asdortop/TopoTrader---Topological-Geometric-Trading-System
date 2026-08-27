@@ -1,0 +1,2 @@
+window,regime_label,test_period,n_train,overall_accuracy,hit_rate,confident_trade_pct,n_test,version
+1,COVID Crash,2020-01-01 -> 2020-12-31,69194,0.5551,0.6067,0.4498,10904,V1 (12ch Laplacian)

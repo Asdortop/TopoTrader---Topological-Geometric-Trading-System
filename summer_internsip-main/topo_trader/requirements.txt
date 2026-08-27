@@ -1,3 +1,6 @@
+# TopoTrader V2 — Dependencies
+# All V2 features (GAT, Regime Channels, CrashForecaster, Walk-Forward)
+# are covered by the packages below. No new dependencies required.
 yfinance
 numpy
 pandas

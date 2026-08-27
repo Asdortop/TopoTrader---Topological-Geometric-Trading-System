@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TopoTrader — Architecture Diagram</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0b0f1a;--card:#111827;--border:#1f2937;--text:#e2e8f0;--muted:#94a3b8;
+      --blue:#3b82f6;--indigo:#6366f1;--purple:#a855f7;--teal:#14b8a6;
+      --orange:#f97316;--green:#22c55e;--red:#ef4444;--yellow:#eab308;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:40px 24px;}
+    h1{text-align:center;font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+    .subtitle{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:48px;font-family:'JetBrains Mono',monospace;}
+    .section-title{font-size:1.1rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:24px;margin-top:56px;}
+    .arrow{display:flex;justify-content:center;align-items:center;font-size:1.4rem;color:var(--muted);margin:8px 0;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;position:relative;}
+    .card-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+    .card-title{font-size:1rem;font-weight:700;}
+    .card-sub{font-size:.78rem;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace;}
+
+    /* PIPELINE */
+    .pipeline{max-width:960px;margin:0 auto;}
+    .node-input{border-color:var(--blue);background:linear-gradient(135deg,#0f1f3d,#111827);max-width:480px;margin:0 auto;text-align:center;}
+    .node-input .card-label{color:var(--blue);}
+    .node-input .card-title{color:#93c5fd;font-size:1.1rem;}
+    .features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 auto;}
+    .feat-card{border-radius:10px;padding:14px;text-align:center;}
+    .feat-card .icon{font-size:1.6rem;margin-bottom:6px;}
+    .feat-card .name{font-size:.82rem;font-weight:700;margin-bottom:4px;}
+    .feat-card .formula{font-size:.66rem;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.6);margin-bottom:8px;line-height:1.5;}
+    .feat-card .channel{font-size:.72rem;font-weight:700;font-family:'JetBrains Mono',monospace;padding:3px 8px;border-radius:6px;display:inline-block;}
+    .feat-graph{background:linear-gradient(135deg,#1c1045,#111827);border:1px solid var(--orange);}
+    .feat-graph .name{color:var(--orange);}
+    .feat-graph .channel{background:rgba(249,115,22,.15);color:var(--orange);}
+    .feat-tda{background:linear-gradient(135deg,#1a0d3d,#111827);border:1px solid var(--purple);}
+    .feat-tda .name{color:var(--purple);}
+    .feat-tda .channel{background:rgba(168,85,247,.15);color:var(--purple);}
+    .feat-walsh{background:linear-gradient(135deg,#0b2229,#111827);border:1px solid var(--teal);}
+    .feat-walsh .name{color:var(--teal);}
+    .feat-walsh .channel{background:rgba(20,184,166,.15);color:var(--teal);}
+    .feat-std{background:linear-gradient(135deg,#0d1f3c,#111827);border:1px solid #475569;}
+    .feat-std .name{color:#94a3b8;}
+    .feat-std .channel{background:rgba(71,85,105,.15);color:#94a3b8;}
+    .node-tensor{border-color:var(--indigo);background:linear-gradient(135deg,#1a1040,#111827);max-width:520px;margin:0 auto;text-align:center;}
+    .node-tensor .card-label{color:var(--indigo);}
+    .node-tensor .card-title{color:#a5b4fc;}
+    .node-tensor .channels{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px;}
+    .node-tensor .ch{font-size:.65rem;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:5px;font-weight:600;}
+    .node-tcn{border-color:var(--blue);background:linear-gradient(135deg,#0a1a3d,#111827);max-width:640px;margin:0 auto;}
+    .node-tcn .card-title{color:#93c5fd;text-align:center;}
+    .tcn-blocks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+    .tcn-block{border-radius:8px;padding:10px 8px;text-align:center;border:1px solid rgba(255,255,255,.08);}
+    .tcn-block .dil{font-size:.7rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+    .tcn-block .days{font-size:.65rem;color:var(--muted);margin-top:2px;}
+    .tcn-block .desc{font-size:.6rem;color:rgba(148,163,184,.7);margin-top:3px;}
+    .gates{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:840px;margin:0 auto;}
+    .gate{border-radius:10px;padding:14px 12px;text-align:center;}
+    .gate .gate-num{font-size:.65rem;font-weight:700;letter-spacing:.1em;margin-bottom:6px;}
+    .gate .gate-name{font-size:.85rem;font-weight:700;margin-bottom:6px;}
+    .gate .gate-rule{font-size:.7rem;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.6);line-height:1.6;}
+    .gate-1{background:linear-gradient(135deg,#2d0a0a,#111827);border:1px solid var(--red);}
+    .gate-1 .gate-num{color:var(--red);}
+    .gate-1 .gate-name{color:#fca5a5;}
+    .gate-2{background:linear-gradient(135deg,#2a1f00,#111827);border:1px solid var(--yellow);}
+    .gate-2 .gate-num{color:var(--yellow);}
+    .gate-2 .gate-name{color:#fde68a;}
+    .gate-3{background:linear-gradient(135deg,#062312,#111827);border:1px solid var(--green);}
+    .gate-3 .gate-num{color:var(--green);}
+    .gate-3 .gate-name{color:#86efac;}
+    .node-output{border-color:var(--green);background:linear-gradient(135deg,#022c16,#111827);max-width:400px;margin:0 auto;text-align:center;}
+    .node-output .card-label{color:var(--green);}
+    .node-output .card-title{color:#86efac;font-size:1.2rem;}
+    .output-signals{display:flex;justify-content:center;gap:10px;margin-top:10px;}
+    .sig{padding:4px 14px;border-radius:999px;font-size:.8rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+    .sig-long{background:rgba(34,197,94,.2);color:#86efac;border:1px solid #22c55e;}
+    .sig-short{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid #ef4444;}
+    .sig-cash{background:rgba(100,116,139,.2);color:#cbd5e1;border:1px solid #64748b;}
+
+    /* TCN DETAIL */
+    .tcn-detail{max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;}
+    .tcn-left{display:flex;flex-direction:column;gap:0;}
+    .tcn-input-box{background:linear-gradient(135deg,#0a1a3d,#111827);border:1px solid var(--blue);border-radius:10px;padding:14px 20px;text-align:center;margin-bottom:8px;}
+    .tcn-input-box .label{font-size:.7rem;color:var(--blue);font-weight:700;letter-spacing:.08em;}
+    .tcn-input-box .shape{font-size:.85rem;font-family:'JetBrains Mono',monospace;color:#93c5fd;margin-top:3px;}
+    .tcn-block-detail{border-radius:10px;padding:14px 16px;margin-bottom:8px;}
+    .tbd-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .tbd-title{font-size:.85rem;font-weight:700;}
+    .tbd-dil{font-size:.72rem;font-family:'JetBrains Mono',monospace;opacity:.7;}
+    .tbd-pipe{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:6px;}
+    .tbd-op{font-size:.62rem;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.75);}
+    .tbd-op-sep{font-size:.7rem;color:var(--muted);}
+    .tbd-rf{font-size:.68rem;color:var(--muted);}
+    .b1{background:linear-gradient(135deg,#0a1a4a,#111827);border:1px solid #3b82f6;}
+    .b1 .tbd-title{color:#93c5fd;}
+    .b2{background:linear-gradient(135deg,#120f3d,#111827);border:1px solid #6366f1;}
+    .b2 .tbd-title{color:#a5b4fc;}
+    .b3{background:linear-gradient(135deg,#1a0d4a,#111827);border:1px solid #8b5cf6;}
+    .b3 .tbd-title{color:#c4b5fd;}
+    .b4{background:linear-gradient(135deg,#200a40,#111827);border:1px solid #a855f7;}
+    .b4 .tbd-title{color:#d8b4fe;}
+    .tcn-head-box{border-radius:10px;padding:14px 16px;text-align:center;background:linear-gradient(135deg,#0b2a1a,#111827);border:1px solid var(--green);margin-top:4px;}
+    .tcn-head-box .label{font-size:.7rem;color:var(--green);font-weight:700;}
+    .tcn-head-box .formula{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#86efac;margin-top:4px;line-height:1.6;}
+    .tcn-callouts{display:flex;flex-direction:column;gap:14px;padding-top:4px;}
+    .callout{border-radius:10px;padding:14px;}
+    .callout .c-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+    .callout .c-title{font-size:.85rem;font-weight:700;margin-bottom:5px;}
+    .callout .c-body{font-size:.72rem;color:rgba(255,255,255,.65);line-height:1.5;}
+    .callout .c-code{font-family:'JetBrains Mono',monospace;font-size:.68rem;background:rgba(0,0,0,.3);padding:4px 8px;border-radius:5px;margin-top:6px;display:block;}
+    .c-blue{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);}
+    .c-blue .c-label{color:var(--blue);} .c-blue .c-title{color:#93c5fd;}
+    .c-orange{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.3);}
+    .c-orange .c-label{color:var(--orange);} .c-orange .c-title{color:#fdba74;}
+    .c-teal{background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.3);}
+    .c-teal .c-label{color:var(--teal);} .c-teal .c-title{color:#5eead4;}
+    .c-purple{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);}
+    .c-purple .c-label{color:var(--purple);} .c-purple .c-title{color:#d8b4fe;}
+    .c-green{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);}
+    .c-green .c-label{color:var(--green);} .c-green .c-title{color:#86efac;}
+
+    /* RESULTS */
+    .results-table{max-width:800px;margin:0 auto;border-collapse:collapse;width:100%;font-size:.82rem;}
+    .results-table th{background:#1f2937;padding:10px 14px;text-align:left;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+    .results-table td{padding:9px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
+    .results-table tr:hover td{background:rgba(255,255,255,.02);}
+    .results-table tr:last-child td{border-bottom:none;}
+    .good{color:var(--green);font-weight:700;} .warn{color:var(--yellow);} .bad{color:var(--red);}
+    .ticker-col{color:#93c5fd;font-weight:700;}
+    hr{border:none;border-top:1px solid var(--border);margin:48px 0 0;}
+    .footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:16px;font-family:'JetBrains Mono',monospace;}
+  </style>
+</head>
+<body>
+
+<h1>TopoTrader</h1>
+<p class="subtitle">Topological-Geometric Algorithmic Trading System &middot; Architecture Reference</p>
+
+<!-- ── DIAGRAM 1 ── -->
+<p class="section-title">&#9312; Full System Pipeline</p>
+<div class="pipeline">
+
+  <div class="card node-input">
+    <div class="card-label">INPUT</div>
+    <div class="card-title">Raw OHLCV Market Data</div>
+    <div class="card-sub">55 Assets (S&amp;P 100 + Major Tech + Liquid ETFs) &middot; yfinance &middot; 2015&ndash;2024 &middot; Parquet Cache</div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <div class="features-grid">
+    <div class="feat-card feat-graph">
+      <div class="icon">&#128311;</div>
+      <div class="name">Spectral Graph Theory</div>
+      <div class="formula">L = I &minus; D&sup1;&frasl;&sup2; &middot; A &middot; D&sup1;&frasl;&sup2;<br>threshold &tau; = 0.5<br>Window: 64 days</div>
+      <span class="channel">C8 &mdash; Laplacian Residual<br>"Locomis Signal"</span>
+    </div>
+    <div class="feat-card feat-tda">
+      <div class="icon">&#128310;</div>
+      <div class="name">Topological Data Analysis</div>
+      <div class="formula">d(i,j) = &radic;(2&middot;(1&minus;&rho;))<br>Ripser &rarr; H0 + H1<br>E = &minus;&Sigma; p&middot;log(p)</div>
+      <span class="channel">C10 &mdash; H0 Entropy<br>C11 &mdash; H1 Entropy</span>
+    </div>
+    <div class="feat-card feat-walsh">
+      <div class="icon">&#128312;</div>
+      <div class="name">Walsh-Hadamard Filter</div>
+      <div class="formula">W = H&sub3;&sub2; &middot; &epsilon;<br>Score = &Sigma;|W_high|/&Sigma;|W|<br>Window: 32 days</div>
+      <span class="channel">C9 &mdash; Sequency Score<br>Mean-rev vs Momentum</span>
+    </div>
+    <div class="feat-card feat-std">
+      <div class="icon">&#128202;</div>
+      <div class="name">Technical Indicators</div>
+      <div class="formula">RSI &middot; MACD &middot; ATR<br>Bollinger %B &middot; Z-Score<br>Log Returns &middot; Volume</div>
+      <span class="channel">C1&ndash;C7, C12<br>Standard Baseline</span>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <div class="card node-tensor">
+    <div class="card-label">12-CHANNEL FEATURE TENSOR</div>
+    <div class="card-title">Shape: (Batch &times; 12 &times; 64)</div>
+    <div class="channels">
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C1 LogRet</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C2 Volume</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C3 RSI</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C4 MACD</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C5 ATR</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C6 BB%</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C7 Z-Score</span>
+      <span class="ch" style="background:rgba(249,115,22,.15);color:#fb923c">C8 Laplacian &#9733;</span>
+      <span class="ch" style="background:rgba(20,184,166,.15);color:#2dd4bf">C9 Walsh &#9733;</span>
+      <span class="ch" style="background:rgba(168,85,247,.15);color:#c084fc">C10 H0 &#9733;</span>
+      <span class="ch" style="background:rgba(168,85,247,.15);color:#c084fc">C11 H1 &#9733;</span>
+      <span class="ch" style="background:rgba(148,163,184,.12);color:#94a3b8">C12 Beta</span>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <div class="card node-tcn">
+    <div class="card-label" style="color:var(--blue);text-align:center">DEEP LEARNING MODEL</div>
+    <div class="card-title">MarketTCN (PyTorch) &mdash; Dilated Causal Convolutions</div>
+    <div class="tcn-blocks">
+      <div class="tcn-block" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.4)">
+        <div class="dil" style="color:#93c5fd">dilation=1</div>
+        <div class="days">3-day field</div>
+        <div class="desc">short-term volatility</div>
+      </div>
+      <div class="tcn-block" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.4)">
+        <div class="dil" style="color:#a5b4fc">dilation=2</div>
+        <div class="days">5-day field</div>
+        <div class="desc">weekly momentum</div>
+      </div>
+      <div class="tcn-block" style="background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.4)">
+        <div class="dil" style="color:#c4b5fd">dilation=4</div>
+        <div class="days">9-day field</div>
+        <div class="desc">monthly trends</div>
+      </div>
+      <div class="tcn-block" style="background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.4)">
+        <div class="dil" style="color:#d8b4fe">dilation=8</div>
+        <div class="days">17-day field</div>
+        <div class="desc">quarterly cycles</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace">
+      Linear(32&rarr;1) + Sigmoid &rarr; P(next-day return &gt; 0)
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <div class="gates">
+    <div class="gate gate-1">
+      <div class="gate-num">GATE 1 &mdash; VETO</div>
+      <div class="gate-name">&#128721; Topological Veto</div>
+      <div class="gate-rule">IF H0 Entropy &lt; 1.0<br>&rarr; GO TO CASH<br>(market topology collapsing)<br>Fires before VIX spikes</div>
+    </div>
+    <div class="gate gate-2">
+      <div class="gate-num">GATE 2 &mdash; SIGNAL</div>
+      <div class="gate-name">&#9889; Deadband Filter</div>
+      <div class="gate-rule">P &gt; 0.55 &rarr; LONG<br>P &lt; 0.45 &rarr; SHORT<br>else &rarr; NEUTRAL<br>(high-conviction only)</div>
+    </div>
+    <div class="gate gate-3">
+      <div class="gate-num">GATE 3 &mdash; SIZE</div>
+      <div class="gate-name">&#128208; Inverse Vol Sizing</div>
+      <div class="gate-rule">size = (20% / ATR) &times; Capital<br>max leverage: 2&times;<br>scales down in high-vol<br>(constant risk targeting)</div>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <div class="card node-output">
+    <div class="card-label">OUTPUT</div>
+    <div class="card-title">Signed Position Size ($)</div>
+    <div class="output-signals">
+      <span class="sig sig-long">+ LONG</span>
+      <span class="sig sig-short">&minus; SHORT</span>
+      <span class="sig sig-cash">&bull; CASH</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── DIAGRAM 2 ── -->
+<p class="section-title">&#9313; MarketTCN &mdash; Architecture Detail</p>
+<div class="tcn-detail">
+  <div class="tcn-left">
+    <div class="tcn-input-box">
+      <div class="label">INPUT TENSOR</div>
+      <div class="shape">(Batch, 12 Channels, 64 Timesteps)</div>
+    </div>
+    <div class="arrow" style="margin:4px 0">&#8595;</div>
+    <div class="tcn-block-detail b1">
+      <div class="tbd-header">
+        <div class="tbd-title">TemporalBlock 1</div>
+        <div class="tbd-dil">dilation = 2&sup0; = 1 &middot; field = 3 days</div>
+      </div>
+      <div class="tbd-pipe">
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Dropout(0.2)</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span>
+      </div>
+      <div class="tbd-rf">+ Residual skip connection &mdash; short-term volatility patterns</div>
+    </div>
+    <div class="arrow" style="margin:4px 0">&#8595;</div>
+    <div class="tcn-block-detail b2">
+      <div class="tbd-header">
+        <div class="tbd-title">TemporalBlock 2</div>
+        <div class="tbd-dil">dilation = 2&sup1; = 2 &middot; field = 5 days</div>
+      </div>
+      <div class="tbd-pipe">
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Dropout(0.2)</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span>
+      </div>
+      <div class="tbd-rf">+ Residual skip connection &mdash; weekly momentum patterns</div>
+    </div>
+    <div class="arrow" style="margin:4px 0">&#8595;</div>
+    <div class="tcn-block-detail b3">
+      <div class="tbd-header">
+        <div class="tbd-title">TemporalBlock 3</div>
+        <div class="tbd-dil">dilation = 2&sup2; = 4 &middot; field = 9 days</div>
+      </div>
+      <div class="tbd-pipe">
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Dropout(0.2)</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span>
+      </div>
+      <div class="tbd-rf">+ Residual skip connection &mdash; monthly trend capture</div>
+    </div>
+    <div class="arrow" style="margin:4px 0">&#8595;</div>
+    <div class="tcn-block-detail b4">
+      <div class="tbd-header">
+        <div class="tbd-title">TemporalBlock 4</div>
+        <div class="tbd-dil">dilation = 2&sup3; = 8 &middot; field = 17 days</div>
+      </div>
+      <div class="tbd-pipe">
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Dropout(0.2)</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Conv1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">Chomp1d</span><span class="tbd-op-sep">&rarr;</span>
+        <span class="tbd-op">SELU</span>
+      </div>
+      <div class="tbd-rf">+ Residual skip connection &mdash; quarterly cycle patterns</div>
+    </div>
+    <div class="arrow" style="margin:4px 0">&#8595;</div>
+    <div class="tcn-head-box">
+      <div class="label">PREDICTION HEAD</div>
+      <div class="formula">y[:, :, &minus;1] &rarr; Linear(32 &rarr; 1) &rarr; Sigmoid<br>Output: P(next-day return &gt; 0) &isin; (0, 1)</div>
+    </div>
+  </div>
+
+  <div class="tcn-callouts">
+    <div class="callout c-orange">
+      <div class="c-label">&#9888; Causality Guarantee</div>
+      <div class="c-title">Chomp1d</div>
+      <div class="c-body">Conv1d pads both sides. Chomp1d removes right-side padding after every conv. Output at time t uses only t, t&minus;1, t&minus;2 ... → zero look-ahead bias.</div>
+      <code class="c-code">return x[:, :, :-chomp_size]</code>
+    </div>
+    <div class="callout c-teal">
+      <div class="c-label">&#129518; Activation</div>
+      <div class="c-title">SELU (not ReLU)</div>
+      <div class="c-body">Self-normalizing &mdash; keeps activations near &mu;=0, &sigma;=1 without BatchNorm. BatchNorm would corrupt temporal structure.</div>
+    </div>
+    <div class="callout c-purple">
+      <div class="c-label">&#128207; Weight Norm</div>
+      <div class="c-title">weight_norm(Conv1d)</div>
+      <div class="c-body">Decouples magnitude and direction of weights. Faster convergence, more stable gradients vs batch statistics.</div>
+    </div>
+    <div class="callout c-blue">
+      <div class="c-label">&#128301; Memory Horizon</div>
+      <div class="c-title">2000+ Trading Days</div>
+      <div class="c-body">Receptive field grows exponentially with dilation. vs LSTM practical limit of ~200 steps.</div>
+      <code class="c-code">LSTM fails at T&asymp;200<br>TCN: 100% at T=1000+</code>
+    </div>
+    <div class="callout c-green">
+      <div class="c-label">&#9889; Training</div>
+      <div class="c-title">Fully Parallel</div>
+      <div class="c-body">No sequential BPTT like RNNs. All timesteps processed in parallel. Fixed gradient path by depth &mdash; no vanishing gradients.</div>
+      <code class="c-code">BCELoss + Adam(lr=1e-3)<br>Epochs: 20 &middot; Batch: 32</code>
+    </div>
+  </div>
+</div>
+
+<!-- ── DIAGRAM 3 ── -->
+<p class="section-title">&#9314; Key Backtest Results (Out-of-Sample 2024&ndash;2025)</p>
+<table class="results-table">
+  <thead>
+    <tr>
+      <th>Ticker</th><th>Strategy Return</th><th>Strategy Sharpe</th><th>Max Drawdown</th><th>B&amp;H Sharpe</th><th>Sharpe Alpha</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td class="ticker-col">NVDA</td><td class="good">+110.0%</td><td class="good">2.69</td><td class="warn">&minus;55.2%</td><td>1.11</td><td class="good">+1.58</td></tr>
+    <tr><td class="ticker-col">MSFT</td><td class="good">+65.5%</td><td class="good">2.71</td><td class="warn">&minus;26.5%</td><td>0.98</td><td class="good">+1.73</td></tr>
+    <tr><td class="ticker-col">QCOM</td><td class="good">+68.0%</td><td class="good">2.21</td><td class="warn">&minus;29.9%</td><td>0.26</td><td class="good">+1.95</td></tr>
+    <tr><td class="ticker-col">TXN</td><td class="good">+59.5%</td><td class="good">2.41</td><td class="warn">&minus;20.0%</td><td>0.61</td><td class="good">+1.80</td></tr>
+    <tr><td class="ticker-col">SPY</td><td class="good">+38.3%</td><td class="good">2.32</td><td class="warn">&minus;22.2%</td><td>0.54</td><td class="good">+1.78</td></tr>
+    <tr><td class="ticker-col">AMD</td><td class="good">+100.5%</td><td class="good">2.07</td><td class="bad">&minus;67.3%</td><td>0.84</td><td class="good">+1.23</td></tr>
+    <tr><td class="ticker-col">AAPL</td><td class="good">+46.5%</td><td class="good">1.79</td><td class="warn">&minus;29.1%</td><td>0.71</td><td class="good">+1.08</td></tr>
+    <tr><td class="ticker-col">TLT</td><td class="bad">&minus;2.9%</td><td class="bad">&minus;0.23</td><td class="warn">&minus;28.1%</td><td>&minus;0.07</td><td class="warn">&minus;0.16</td></tr>
+  </tbody>
+</table>
+
+<hr/>
+<p class="footer">TopoTrader &middot; VNR VJIET &middot; Vaibhavi A &middot; Tejas G &middot; Harinath K &middot; Vamshi S &middot; Pranav T</p>
+
+</body>
+</html>

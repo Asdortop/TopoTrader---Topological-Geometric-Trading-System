@@ -1,0 +1,12 @@
+baseline,v2_mean_hr,base_mean_hr,mean_diff,t_stat,p_value,cohens_d,direction,sig@5%
+Momentum-5,0.5078,0.4882,0.0196,7.592,0.0016,3.395,V2 > Baseline,✓
+MACD Crossover,0.5078,0.4973,0.0105,4.365,0.012,1.952,V2 > Baseline,✓
+Momentum-1,0.5078,0.4888,0.019,3.678,0.0212,1.645,V2 > Baseline,✓
+LSTM - OHLCV only (5ch),0.5078,0.5161,-0.0083,-2.269,0.0858,-1.015,Baseline > V2,✗
+Logistic Regression (16ch),0.5078,0.5389,-0.0311,-1.939,0.1246,-0.867,Baseline > V2,✗
+Random Forest (16ch),0.5078,0.5338,-0.026,-1.845,0.1388,-0.825,Baseline > V2,✗
+Random,0.5078,0.5003,0.0075,1.154,0.3129,0.516,V2 > Baseline,✗
+Bollinger %B,0.5078,0.5159,-0.0081,-1.013,0.3683,-0.453,Baseline > V2,✗
+Always-Up,0.5078,0.5043,0.0035,0.557,0.6069,0.249,V2 > Baseline,✗
+RSI Threshold,0.5078,0.5134,-0.0056,-0.552,0.6105,-0.247,Baseline > V2,✗
+TCN - Std Indicators (7ch),0.5078,0.5096,-0.0018,-0.376,0.7263,-0.168,Baseline > V2,✗
