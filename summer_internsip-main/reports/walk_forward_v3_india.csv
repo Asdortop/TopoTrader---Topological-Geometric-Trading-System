@@ -1,0 +1,11 @@
+window,label,model,overall_accuracy,hit_rate,confident_trade_pct,n_test
+1,Demonetization,V3,0.5013,0.4994,0.9193,8918
+2,GST Launch,V3,0.5032,0.5035,0.8109,8967
+3,IL&FS Crisis,V3,0.506,0.5053,0.8014,8869
+4,Elections/Slowdown,V3,0.5078,0.5191,0.6293,8820
+5,COVID Crash,V3,0.5149,0.5155,0.9315,9163
+1,Demonetization,V2,0.501,0.5003,0.8372,8918
+2,GST Launch,V2,0.4936,0.4992,0.7468,8967
+3,IL&FS Crisis,V2,0.5014,0.5092,0.6771,8869
+4,Elections/Slowdown,V2,0.5166,0.5238,0.6559,8820
+5,COVID Crash,V2,0.5064,0.5076,0.7762,9163
