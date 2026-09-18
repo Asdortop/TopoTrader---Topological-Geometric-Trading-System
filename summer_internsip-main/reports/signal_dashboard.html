@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopoTrader V3 — Signal Dashboard — 15 April 2021</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#0d1526; color:#e0e6f0; min-height:100vh; }
+  .container { max-width:900px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:24px; font-weight:700; color:#fff; }
+  h2 { font-size:15px; font-weight:600; color:#8899bb; margin:20px 0 10px; text-transform:uppercase; letter-spacing:1px; }
+  .header { background:linear-gradient(135deg,#1a2744,#0d1526); border:1px solid #2a3a5e; border-radius:12px; padding:20px 24px; margin-bottom:20px; }
+  .meta { display:flex; gap:24px; margin-top:12px; flex-wrap:wrap; }
+  .meta-item { background:#0d1526; border-radius:8px; padding:10px 16px; }
+  .meta-label { font-size:11px; color:#8899bb; text-transform:uppercase; letter-spacing:0.5px; }
+  .meta-value { font-size:18px; font-weight:700; color:#fff; margin-top:2px; }
+  .regime-badge { display:inline-block; background:#3498db; color:#fff; border-radius:20px; padding:4px 12px; font-size:13px; font-weight:600; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { background:#0d1526; padding:10px 12px; text-align:left; color:#8899bb; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+  td { padding:10px 12px; border-bottom:1px solid #1a2744; }
+  .card { background:#131f3a; border:1px solid #1e2d52; border-radius:10px; padding:20px; margin-bottom:16px; }
+  .footer { text-align:center; color:#4a5a7a; font-size:12px; margin-top:20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>TopoTrader V3 — Signal Dashboard</h1>
+    <div class="meta">
+      <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">15 April 2021</div></div>
+      <div class="meta-item"><div class="meta-label">Regime</div><div class="meta-value"><span class="regime-badge">Sideways</span></div></div>
+      <div class="meta-item"><div class="meta-label">Model Hit Rate</div><div class="meta-value">51.22%</div></div>
+      <div class="meta-item"><div class="meta-label">Active Signals</div><div class="meta-value">7</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Top Signals</h2>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Ticker</th><th>Direction</th><th>Probability</th>
+        <th>Confidence</th><th>Position Size</th><th>Stop Loss</th>
+      </tr></thead>
+      <tbody>
+            <tr style="background:#1e2d52">
+                <td style="color:#aaa">1</td>
+                <td><strong>BRITANNIA</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.793</td>
+                <td>0.293</td>
+                <td style="color:#f39c12">1.5%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr>
+            <tr style="background:#1a2744">
+                <td style="color:#aaa">2</td>
+                <td><strong>ASIANPAINT</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.761</td>
+                <td>0.261</td>
+                <td style="color:#f39c12">1.5%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr>
+            <tr style="background:#1e2d52">
+                <td style="color:#aaa">3</td>
+                <td><strong>NESTLEIND</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.758</td>
+                <td>0.258</td>
+                <td style="color:#f39c12">1.5%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr>
+            <tr style="background:#1a2744">
+                <td style="color:#aaa">4</td>
+                <td><strong>DRREDDY</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.739</td>
+                <td>0.239</td>
+                <td style="color:#f39c12">1.5%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr>
+            <tr style="background:#1e2d52">
+                <td style="color:#aaa">5</td>
+                <td><strong>HINDUNILVR</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.725</td>
+                <td>0.225</td>
+                <td style="color:#f39c12">1.4%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr>
+            <tr style="background:#1a2744">
+                <td style="color:#aaa">6</td>
+                <td><strong>HCLTECH</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.706</td>
+                <td>0.206</td>
+                <td style="color:#f39c12">1.4%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr>
+            <tr style="background:#1e2d52">
+                <td style="color:#aaa">7</td>
+                <td><strong>TITAN</strong></td>
+                <td style="color:#2ecc71;font-weight:bold">LONG</td>
+                <td>0.688</td>
+                <td>0.188</td>
+                <td style="color:#f39c12">1.4%</td>
+                <td style="color:#e74c3c">-1.5%</td>
+            </tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>All Stocks — Probability Heatmap (Top 20 by conviction)</h2>
+    <div style="display:flex;align-items:center;margin-bottom:8px;font-size:11px;color:#8899bb">
+      <span style="width:100px"></span>
+      <span style="width:100px;text-align:right">SHORT</span>
+      <span style="width:20px;text-align:center">|</span>
+      <span style="width:100px;text-align:left">LONG</span>
+    </div>
+    
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">BRITANNIA</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:58px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.793</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">ASIANPAINT</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:52px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.761</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">NESTLEIND</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:51px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.758</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">DRREDDY</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:47px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.739</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">HINDUNILVR</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:44px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.725</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">HCLTECH</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:41px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.706</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;border-left:3px solid #f39c12;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">TITAN</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:37px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.688</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">TECHM</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:33px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.666</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">INFY</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:32px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.664</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">ADANIPORTS</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:30px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.654</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">TATASTEEL</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:30px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.651</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">VEDL</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:30px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.651</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">CIPLA</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:28px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.643</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">MARUTI</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:28px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.642</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">TCS</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:28px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.642</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">SUNPHARMA</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:28px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.640</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">UPL</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:26px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.634</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">GRASIM</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:26px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.630</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">JSWSTEEL</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:25px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.628</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:4px 0;padding-left:4px">
+            <span style="width:100px;color:#ccc;font-size:13px">NTPC</span>
+            <div style="width:200px;background:#1a2744;border-radius:3px;overflow:hidden">
+                <div style="width:24px;height:14px;background:#2ecc71;
+                             margin-left:100px"></div>
+            </div>
+            <span style="margin-left:8px;color:#aaa;font-size:12px">0.625</span>
+        </div>
+  </div>
+
+  <div class="card">
+    <h2>Risk Parameters (Active)</h2>
+    <table>
+      <thead><tr><th>Parameter</th><th>Value</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Per-trade stop-loss</td><td>-1.5%</td><td>Immediate exit</td></tr>
+        <tr><td>Weekly portfolio stop</td><td>-3.0%</td><td>Exit all positions</td></tr>
+        <tr><td>Monthly circuit breaker</td><td>-5.0%</td><td>Suspend trading 21 days</td></tr>
+        <tr><td>Max single position</td><td>20%</td><td>Kelly Criterion cap</td></tr>
+        <tr><td>Transaction cost (round-trip)</td><td>0.36%</td><td>NSE / Zerodha</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    Generated by TopoTrader V3 &mdash; Dual-Branch TCN + SE-Net + Mixture of Experts<br>
+    Statistical significance: Hit Rate 51.23%, p = 0.0001 vs NSE break-even
+  </div>
+</div>
+</body></html>

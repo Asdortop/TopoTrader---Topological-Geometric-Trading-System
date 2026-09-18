@@ -1,0 +1,6 @@
+window,sharpe,max_drawdown,cagr,win_rate,n_trades,final_capital,sharpe_Crash,sharpe_High-Vol,sharpe_Bull,sharpe_Sideways
+Demonetization,0.878,-0.0187,0.0366,0.5044,1249,1026280.0,0.0,3.278,0.0,-1.575
+GST Launch,-0.569,-0.0187,-0.0081,0.523,1281,994092.0,0.0,0.0,0.0,-0.569
+IL&FS Crisis,-1.36,-0.0189,-0.0209,0.4919,1167,984975.0,0.0,-0.57,0.0,-1.704
+Elections/Slowdown,0.671,-0.0064,0.0109,0.534,972,1007783.0,0.0,1.893,0.0,0.178
+COVID Crash,-1.24,-0.043,-0.0367,0.5011,1309,972642.0,0.0,-0.446,0.0,-3.417
